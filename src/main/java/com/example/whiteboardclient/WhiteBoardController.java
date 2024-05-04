@@ -1,5 +1,6 @@
 package com.example.whiteboardclient;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
@@ -10,15 +11,14 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import org.example.IWhiteboard;
-import org.example.Line;
-import org.example.Rectangle;
-import org.example.TextItem;
+import org.example.*;
 
+import java.io.Serializable;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 
 
-public class WhiteBoardController {
+public class WhiteBoardController implements  Serializable,UIUpdater {
     @FXML
     private Canvas canvas;
     @FXML private Button freeDrawButton;
@@ -39,6 +39,8 @@ public class WhiteBoardController {
             String remoteObjectName = "//localhost:20017/WhiteboardServer";
             // RMI 服务器查找
             server = (IWhiteboard) Naming.lookup(remoteObjectName);
+            WhiteboardListener listener = new WhiteboardListener(this);
+            server.addWhiteboardListener(listener);
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
@@ -172,5 +174,14 @@ public class WhiteBoardController {
             });
         });
 
+    }
+
+
+    @Override
+    public void displayLine(Line line) {
+        Platform.runLater(() -> {
+            gc.setStroke(Color.web(line.getColor()));
+            gc.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+        });
     }
 }

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.IWhiteboard;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;  // 导入Naming类
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-public class WhiteBoardApplication extends Application {
+public class WhiteBoardApplication extends Application implements Serializable {
     @Override
     public void start(Stage stage) throws IOException, NotBoundException {
         try {

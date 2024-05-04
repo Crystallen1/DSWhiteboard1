@@ -1,18 +1,36 @@
 package com.example.whiteboardclient;
 
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import org.example.IWhiteboardListener;
+import org.example.Line;
 import org.example.Shape;
+import org.example.TextItem;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-public class WhiteboardListener implements IWhiteboardListener {
+public class WhiteboardListener extends UnicastRemoteObject implements IWhiteboardListener, Serializable {
+    private UIUpdater uiUpdater;
+
+    public WhiteboardListener(UIUpdater uiUpdater) throws RemoteException {
+        super();
+        this.uiUpdater = uiUpdater;
+    }
+
     @Override
     public void shapeDrawn(Shape shape) throws RemoteException {
-        // 更新客户端的UI以显示新绘制的形状
-        Platform.runLater(() -> {
-            // 假设你有一个方法来处理形状的绘制
-            //drawShape(shape);
-        });
+
+    }
+
+    @Override
+    public void lineDrawn(Line line) throws RemoteException {
+        uiUpdater.displayLine(line);
+    }
+
+    @Override
+    public void textDrawn(TextItem text) throws RemoteException {
+
     }
 }
