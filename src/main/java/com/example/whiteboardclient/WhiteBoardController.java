@@ -7,6 +7,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -20,6 +21,7 @@ import java.rmi.RemoteException;
 
 public class WhiteBoardController implements  Serializable,UIUpdater {
     @FXML public Button ovelButton;
+    @FXML public ColorPicker colorPicker;
     @FXML
     private Canvas canvas;
     @FXML private Button freeDrawButton;
@@ -32,6 +34,8 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
 
     private GraphicsContext gc;
     private WritableImage snapshot;
+
+    private Color selectedColor=Color.BLACK;
 
 
 
@@ -46,6 +50,7 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
         }
+
 
         gc = canvas.getGraphicsContext2D();
         prepareCanvas(gc);
@@ -80,7 +85,7 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             gc.strokeLine(startX, startY, endX, endY); // 绘制线条到 Canvas
             try {
                 // 发送绘制数据到服务器
-                server.freeDraw(new Line("black",startX, startY, endX, endY ));
+                server.freeDraw(new Line(selectedColor.toString(),startX, startY, endX, endY ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -111,7 +116,7 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             double endY = event.getY();
             try {
                 // 发送绘制数据到服务器
-                server.drawRect(new Rectangle("black",startX, startY, endX, endY ));
+                server.drawRect(new Rectangle(selectedColor.toString(),startX, startY, endX, endY ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -139,7 +144,7 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             double endY = event.getY();
             try {
                 // 发送绘制数据到服务器
-                server.drawCircle(new Circle("black",startX, startY, endX, endY ));
+                server.drawCircle(new Circle(selectedColor.toString(),startX, startY, endX, endY ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -171,7 +176,7 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             double endY = event.getY();
             try {
                 // 发送绘制数据到服务器
-                server.drawOval(new Oval("black",startX, startY, endX, endY ));
+                server.drawOval(new Oval(selectedColor.toString(),startX, startY, endX, endY ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -299,5 +304,10 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             double height = Math.abs(endY - rectangle.getStartY());
             gc.strokeRect(Math.min(rectangle.getStartX(), endX), Math.min(rectangle.getStartY(), endY), width, height);
         });
+    }
+
+    public void onColorSelected(ActionEvent actionEvent) {
+        selectedColor = colorPicker.getValue();
+        gc.setStroke(selectedColor); // 设置画笔颜色
     }
 }
