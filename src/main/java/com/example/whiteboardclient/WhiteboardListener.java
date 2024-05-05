@@ -2,10 +2,7 @@ package com.example.whiteboardclient;
 
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
-import org.example.IWhiteboardListener;
-import org.example.Line;
-import org.example.Shape;
-import org.example.TextItem;
+import org.example.*;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -20,8 +17,8 @@ public class WhiteboardListener extends UnicastRemoteObject implements IWhiteboa
     }
 
     @Override
-    public void shapeDrawn(Shape shape) throws RemoteException {
-
+    public void rectDrawn(Rectangle rectangle) throws RemoteException {
+        uiUpdater.displayRect(rectangle);
     }
 
     @Override
@@ -30,7 +27,22 @@ public class WhiteboardListener extends UnicastRemoteObject implements IWhiteboa
     }
 
     @Override
-    public void textDrawn(TextItem text) throws RemoteException {
+    public void triangleDrawn(Triangle triangle) throws RemoteException {
+        uiUpdater.displayTriangle(triangle);
+    }
 
+    @Override
+    public void circleDrawn(Circle circle) throws RemoteException {
+        uiUpdater.displayCircle(circle);
+    }
+
+    @Override
+    public void ovalDrawn(Oval oval) throws RemoteException {
+        uiUpdater.displayOval(oval);
+    }
+
+    @Override
+    public void textDrawn(TextItem text) throws RemoteException {
+        uiUpdater.displayText(text);
     }
 }
