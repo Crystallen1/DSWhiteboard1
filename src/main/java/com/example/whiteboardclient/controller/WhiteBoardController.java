@@ -1,25 +1,26 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.controller;
 
+import com.example.whiteboardclient.WhiteBoardApplication;
+import com.example.whiteboardclient.connect.IWhiteboard;
+import com.example.whiteboardclient.datamodel.*;
+import com.example.whiteboardclient.listener.WhiteboardListener;
+import com.example.whiteboardclient.WhiteboardUIUpdater;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import org.example.*;
+import javafx.stage.WindowEvent;
 
 import java.io.Serializable;
 import java.rmi.Naming;
-import java.rmi.RemoteException;
 
 
-public class WhiteBoardController implements  Serializable,UIUpdater {
+public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater {
     @FXML public Button ovelButton;
     @FXML public ColorPicker colorPicker;
     @FXML
@@ -44,7 +45,13 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
             String remoteObjectName = "//localhost:20017/WhiteboardServer";
             // RMI 服务器查找
             server = (IWhiteboard) Naming.lookup(remoteObjectName);
-            WhiteboardListener listener = new WhiteboardListener(this);
+            if (!server.isUserExists(WhiteBoardApplication.getUsername())) {
+                System.err.println("User does not exist: " + WhiteBoardApplication.getUsername());
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Disconnect ");
+                alert.show();
+                return;
+            }
+                WhiteboardListener listener = new WhiteboardListener(this);
             server.addWhiteboardListener(listener);
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
@@ -309,5 +316,17 @@ public class WhiteBoardController implements  Serializable,UIUpdater {
     public void onColorSelected(ActionEvent actionEvent) {
         selectedColor = colorPicker.getValue();
         gc.setStroke(selectedColor); // 设置画笔颜色
+    }
+
+    @FXML
+    private void onCloseWindow(WindowEvent event) {
+        try {
+            // 关闭RMI连接
+            if (server != null) {
+            }
+        } catch (Exception e) {
+            System.err.println("Error closing RMI connection: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

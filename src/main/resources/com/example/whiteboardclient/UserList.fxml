@@ -8,8 +8,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.whiteboardclient.UserListController"
+            fx:controller="com.example.whiteboardclient.controller.UserListController"
             spacing="5">
     <ListView fx:id="userList"/>
-    <Button text="Kick" onAction="#kickUser" />
 </VBox>

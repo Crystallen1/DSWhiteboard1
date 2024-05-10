@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.example.IWhiteboard;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -13,17 +12,24 @@ import java.rmi.Naming;  // 导入Naming类
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class WhiteBoardApplication extends Application implements Serializable {
+    static String serverIPAddress;
+    static int serverPort;
+    static String username;
+
+    static boolean admin;
+
+    public static String getUsername() {
+        return username;
+    }
+
     @Override
     public void start(Stage stage) throws IOException, NotBoundException {
-        try {
-            String remoteObjectName = "//localhost:20017/WhiteboardServer";
-            IWhiteboard service = (IWhiteboard) Naming.lookup(remoteObjectName);
-            // 现在可以使用 service 对象调用远程方法了
-        } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            e.printStackTrace();
-        }
+        System.out.println(serverIPAddress+serverPort+username);
         FXMLLoader fxmlLoader = new FXMLLoader(WhiteBoardApplication.class.getResource("MainLayout.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Hello!");
@@ -31,7 +37,21 @@ public class WhiteBoardApplication extends Application implements Serializable {
         stage.show();
     }
 
+    public static boolean isAdmin() {
+        return admin;
+    }
+
+    public static void startWhiteBoard(String serverIPAddress, int serverPort, String username, boolean admin) {
+        WhiteBoardApplication.serverIPAddress = serverIPAddress;
+        WhiteBoardApplication.serverPort = serverPort;
+        WhiteBoardApplication.username = username;
+        WhiteBoardApplication.admin = admin;
+        launch();
+    }
+
     public static void main(String[] args) {
+
         launch();
     }
 }
+

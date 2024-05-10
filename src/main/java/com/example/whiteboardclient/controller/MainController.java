@@ -1,4 +1,4 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.controller;
 
 import javafx.event.ActionEvent;
 import javafx.scene.layout.VBox;

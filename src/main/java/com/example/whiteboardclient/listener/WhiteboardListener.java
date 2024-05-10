@@ -1,17 +1,18 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.listener;
 
+import com.example.whiteboardclient.WhiteboardUIUpdater;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
-import org.example.*;
+import com.example.whiteboardclient.datamodel.*;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class WhiteboardListener extends UnicastRemoteObject implements IWhiteboardListener, Serializable {
-    private UIUpdater uiUpdater;
+    private WhiteboardUIUpdater uiUpdater;
 
-    public WhiteboardListener(UIUpdater uiUpdater) throws RemoteException {
+    public WhiteboardListener(WhiteboardUIUpdater uiUpdater) throws RemoteException {
         super();
         this.uiUpdater = uiUpdater;
     }
@@ -45,4 +46,5 @@ public class WhiteboardListener extends UnicastRemoteObject implements IWhiteboa
     public void textDrawn(TextItem text) throws RemoteException {
         uiUpdater.displayText(text);
     }
+
 }
