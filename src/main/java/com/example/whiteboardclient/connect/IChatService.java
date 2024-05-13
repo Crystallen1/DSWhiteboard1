@@ -7,9 +7,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public interface IChatService extends Remote,IClientService {
+public interface IChatService extends Remote {
     void sendMessage(String username,String message) throws RemoteException;
-    List<String> getChatHistory() throws RemoteException;
     void addChatListener(IChatListener listener) throws RemoteException;
 
 }

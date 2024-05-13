@@ -16,21 +16,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializable {
-    private List<IUserlistListener> listeners = new ArrayList<>();
+    private List<IUserlistListener> listeners = new CopyOnWriteArrayList<>();
     private UserManager userManager;
     private boolean isApprove=false;
 
     private final BlockingQueue<String> messages = new ArrayBlockingQueue<>(10);
-
-
     public UserManager getUserManager() {
         return userManager;
     }
-
     @Override
-    public void sendMessage(String message) throws RemoteException {
+    public synchronized void sendMessage(String message) throws RemoteException {
         messages.add(message);
     }
 
@@ -49,7 +47,7 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
         this.userManager = userManager;
     }
 
-    protected  void notifyListeners(UserManager userManager,String username)throws RemoteException {
+    protected synchronized void notifyListeners(UserManager userManager,String username)throws RemoteException {
         for (IUserlistListener listener : listeners) {
             listener.updateUserManager(userManager);
         }
@@ -59,12 +57,12 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
             }
         }
     }
-    protected  void notifyListeners(UserManager userManager)throws RemoteException {
+    protected synchronized void notifyListeners(UserManager userManager)throws RemoteException {
         for (IUserlistListener listener : listeners) {
             listener.updateUserManager(userManager);
         }
     }
-    protected  void notifyListeners(String username)throws RemoteException {
+    protected synchronized void notifyListeners(String username)throws RemoteException {
         for (IUserlistListener listener : listeners) {
             if (listener.getAdmin()){
                 listener.joinRequest(username);
@@ -78,7 +76,7 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     }
 
     @Override
-    public void createAdmin(User user) throws RemoteException {
+    public synchronized void createAdmin(User user) throws RemoteException {
 
             System.out.println("add new admin:"+user.getUsername());
             userManager.addUser(user);
@@ -87,21 +85,21 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     }
 
     @Override
-    public void createUser(User user) throws RemoteException {
+    public synchronized void createUser(User user) throws RemoteException {
         System.out.println("add new user:"+user.getUsername());
         userManager.addUser(user);
         notifyListeners(userManager);
     }
 
     @Override
-    public void kickUser(String username) throws RemoteException{
+    public synchronized void kickUser(String username) throws RemoteException{
         System.out.println("kick user:"+username);
         userManager.deleteUser(username);
         notifyListeners(userManager,username);
     }
 
     @Override
-    public void joinUser(String username) throws RemoteException {
+    public synchronized void joinUser(String username) throws RemoteException {
         System.out.println(username+" want to join");
         for (int i = 0; i < userManager.getUsers().size(); i++) {
             if (username.equals(userManager.getUsers().get(i).getUsername())){
@@ -114,7 +112,7 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     }
 
     @Override
-    public boolean isUserExists(String username) throws RemoteException {
+    public synchronized boolean isUserExists(String username) throws RemoteException {
         for (int i = 0; i < userManager.getUsers().size(); i++) {
             if (Objects.equals(userManager.getUsers().get(i).getUsername(), username)){
                 return true;
@@ -128,14 +126,4 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
         isApprove=true;
     }
 
-    @Override
-    public void disconnect() throws RemoteException {
-
-        // 清空消息队列
-        messages.clear();
-        listeners.clear();
-
-        System.out.println("Disconnected user and cleared resources.");
-
-    }
 }

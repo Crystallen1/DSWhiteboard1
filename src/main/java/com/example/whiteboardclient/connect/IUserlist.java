@@ -10,7 +10,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public interface IUserlist extends Remote, Serializable,IClientService {
+public interface IUserlist extends Remote, Serializable {
     void addUserlistListener(IUserlistListener listener) throws RemoteException;
     void createAdmin(User user) throws RemoteException;
     void createUser(User user) throws RemoteException;

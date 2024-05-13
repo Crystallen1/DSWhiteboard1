@@ -230,8 +230,8 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double endY = event.getY();
             double radiusX = Math.abs(endX - startX) / 2;
             double radiusY = Math.abs(endY - startY) / 2;
-            double centerX = startX + radiusX;
-            double centerY = startY + radiusY;
+            double centerX = (startX + endX) / 2; // 改为计算 startX 和 endX 的平均值
+            double centerY = (startY + endY) / 2; // 改为计算 startY 和 endY 的平均值
 
             gc.strokeOval(centerX - radiusX, centerY - radiusY, 2 * radiusX, 2 * radiusY);
         });
@@ -276,7 +276,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
             try {
                 // 发送绘制数据到服务器
-                server.drawTriangle(new Triangle("black",startX, startY, endX, endY,midX ));
+                server.drawTriangle(new Triangle(selectedColor.toString(),startX, startY, endX, endY,midX ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -348,8 +348,10 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double endY = oval.getEndY();
             double radiusX = Math.abs(endX -  oval.getStartX()) / 2;
             double radiusY = Math.abs(endY - oval.getStartY()) / 2;
-            double centerX = oval.getStartX() + radiusX;
-            double centerY = oval.getStartY() + radiusY;
+            double centerX = (oval.getStartX() + endX) / 2;
+            double centerY = (oval.getStartY() + endY)/2;
+
+            gc.strokeOval(centerX - radiusX, centerY - radiusY, 2 * radiusX, 2 * radiusY);
 
             gc.strokeOval(centerX - radiusX, centerY - radiusY, 2 * radiusX, 2 * radiusY);
         });

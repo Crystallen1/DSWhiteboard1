@@ -8,7 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public interface IWhiteboard extends Remote, Serializable,IClientService {
+public interface IWhiteboard extends Remote, Serializable {
     void drawRect(Rectangle rectangle) throws RemoteException;
 
     void drawCircle(Circle circle) throws RemoteException;
@@ -22,9 +22,6 @@ public interface IWhiteboard extends Remote, Serializable,IClientService {
 
     // 输入文字
     void drawText(TextItem text) throws RemoteException;
-
-    // 清除白板
-    void clear() throws RemoteException;
 
     void addWhiteboardListener(IWhiteboardListener listener) throws RemoteException;
 
