@@ -17,10 +17,13 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     private List<IWhiteboardListener> listeners = new ArrayList<>();
     private UserManager userManager;
 
+    CanvasStorage storage;
+
 
     protected WhiteboardRMI(UserManager userManager) throws RemoteException {
         super();
         this.userManager=userManager;
+        this.storage= new CanvasStorage();
     }
 
     public synchronized void addWhiteboardListener(IWhiteboardListener listener) throws RemoteException {
@@ -40,6 +43,37 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Shape> loadCanvas()  throws RemoteException {
+        return storage.getShapes();
+    }
+
+    @Override
+    public void saveCanvas() throws RemoteException {
+        storage.saveShapes();
+    }
+
+    @Override
+    public void saveAsCanvas(String filePath)throws RemoteException {
+        storage.saveAsShapes(filePath);
+    }
+
+    @Override
+    public void openFile(String filePath) throws RemoteException {
+        storage.loadShapesFromFile(filePath);
+        for (IWhiteboardListener listener : listeners) {
+            listener.updateCanvas();
+        }
+    }
+
+    @Override
+    public void newFile() throws RemoteException {
+        storage.clearShape();
+        for (IWhiteboardListener listener : listeners) {
+            listener.updateCanvas();
+        }
     }
 
     protected void notifyListeners(Rectangle rectangle) throws RemoteException {
@@ -81,40 +115,42 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     public void drawRect(Rectangle rectangle) throws RemoteException {
         System.out.println("Line drawn from (" + rectangle.getStartX() + ", " + rectangle.getStartY());
         notifyListeners(rectangle);
+        storage.addShape(rectangle);
     }
 
     @Override
     public void drawCircle(Circle circle) throws RemoteException {
         System.out.println("Circle drawn from (" + circle.getStartX() + ", " + circle.getStartY());
         notifyListeners(circle);
-
+        storage.addShape(circle);
     }
 
     @Override
     public void drawTriangle(Triangle triangle) throws RemoteException {
         System.out.println("triangle drawn from (" + triangle.getStartX() + ", " + triangle.getStartY());
-
         notifyListeners(triangle);
-
+        storage.addShape(triangle);
     }
 
     @Override
     public void drawOval(Oval oval) throws RemoteException {
         System.out.println("oval drawn from (" + oval.getStartX() + ", " + oval.getStartY());
-
         notifyListeners(oval);
+        storage.addShape(oval);
     }
 
     @Override
     public void freeDraw(Line line) throws RemoteException {
         System.out.println(line.getColor()+"Line drawn from (" + line.getStartX() + ", " + line.getStartY() + ") to (" + line.getEndX() + ", " + line.getEndY() + ")");
         notifyListeners(line);
+        storage.addShape(line);
     }
 
     @Override
     public void drawText(TextItem text) throws RemoteException {
-        System.out.println(text.getText()+" add at" + text.getX() + ", " + text.getY() + "with" +text.getColor());
+        System.out.println(text.getText()+" add at" + text.getStartX() + ", " + text.getStartY() + "with" +text.getColor());
         notifyListeners(text);
+        storage.addShape(text);
     }
 
     @Override
@@ -122,5 +158,8 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
 
     }
 
+    @Override
+    public void disconnect() throws RemoteException {
 
+    }
 }

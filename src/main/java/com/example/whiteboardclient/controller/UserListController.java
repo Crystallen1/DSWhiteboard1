@@ -27,8 +27,15 @@ public class UserListController implements Serializable,UserlistUIUpdater {
 
 
     private void kickUser(String username) throws RemoteException {
-        server.kickUser(username);
-        System.out.println("Kicking user: " + username); // 这里可以添加真正的踢人逻辑
+        if (username.equals("admin")){
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "you can't kick yourself");
+                alert.showAndWait();
+            });
+        }else {
+            server.kickUser(username);
+            System.out.println("Kicking user: " + username);
+        }
     }
     public void addUser(String username) {
         ObservableList<String> items = userList.getItems();
@@ -53,18 +60,62 @@ public class UserListController implements Serializable,UserlistUIUpdater {
                 if (response == ButtonType.YES) {
                     try {
                         server.createUser(new User(username));
+                        server.sendMessage("approve");
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
-//                    user.setApproved(true);
                 } else {
+                    try {
+                        server.sendMessage("disapprove");
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         });
         return true;
     }
 
-    public void initialize() {
+    @Override
+    public void warnSameUsername(String username) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "same username");
+            alert.showAndWait();
+        });
+    }
+
+    @Override
+    public void updateUserListDisconnected(String username) {
+
+    }
+
+    @Override
+    public void shutdown() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "you have been kicked");
+            alert.showAndWait();
+            System.exit(0);  // 或者其他适当的停止机制
+        });
+    }
+
+    public void initialize() throws RemoteException {
+        try {
+            String remoteObjectName = "//localhost:20017/UserServer";
+            // RMI 服务器查找
+            server = (IUserlist) Naming.lookup(remoteObjectName);
+            UserlistListener listener = new UserlistListener(this,WhiteBoardApplication.isAdmin(),WhiteBoardApplication.getUsername());
+            server.addUserlistListener(listener);
+//            if (WhiteBoardApplication.isAdmin()){
+//                server.createAdmin(new User(WhiteBoardApplication.getUsername()));
+//            }else {
+//                //server.createAdmin(new User(WhiteBoardApplication.getUsername()));
+//                server.joinUser(WhiteBoardApplication.getUsername());
+//            }
+        } catch (Exception e) {
+            System.err.println("RMI server connection error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         userList.setCellFactory(param -> new ListCell<String>() {
             private final HBox hBox = new HBox();
             private final Text text = new Text();
@@ -97,22 +148,6 @@ public class UserListController implements Serializable,UserlistUIUpdater {
                 }
             }
         });
-        try {
-            String remoteObjectName = "//localhost:20017/UserServer";
-            // RMI 服务器查找
-            server = (IUserlist) Naming.lookup(remoteObjectName);
-            UserlistListener listener = new UserlistListener(this,WhiteBoardApplication.isAdmin());
-            server.addUserlistListener(listener);
-            if (WhiteBoardApplication.isAdmin()){
-                server.createAdmin(new User(WhiteBoardApplication.getUsername()));
-            }else {
-                //server.createAdmin(new User(WhiteBoardApplication.getUsername()));
-                server.joinUser(WhiteBoardApplication.getUsername());
-            }
-        } catch (Exception e) {
-            System.err.println("RMI server connection error: " + e.getMessage());
-            e.printStackTrace();
-        }
-
+        addUserToList(server.getUserManager());
     }
 }

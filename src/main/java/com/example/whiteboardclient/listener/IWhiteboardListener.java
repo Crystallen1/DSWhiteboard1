@@ -13,5 +13,6 @@ public interface IWhiteboardListener extends Remote, Serializable {
     void circleDrawn(Circle circle)throws RemoteException;
     void ovalDrawn(Oval oval)throws RemoteException;
     void textDrawn(TextItem text) throws RemoteException;
+    void updateCanvas()throws RemoteException;
 
 }

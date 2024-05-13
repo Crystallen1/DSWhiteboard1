@@ -6,7 +6,7 @@ public class Triangle extends Shape {
     private double midX;
 
     public Triangle(String color, double startX, double startY, double endX, double endY, double midX) {
-        super(color, startX, startY);
+        super(color, startX, startY,"triangle");
         this.endX = endX;
         this.endY = endY;
         this.midX = midX;

@@ -11,8 +11,8 @@ public class CreateWhiteBoard {
         try {
             UserManager userManager = new UserManager();
             ChatRMI chatServer = new ChatRMI(userManager);
-            WhiteboardRMI whiteboardServer = new WhiteboardRMI(userManager);
             UserRMI userRMI = new UserRMI(userManager);
+            WhiteboardRMI whiteboardServer = new WhiteboardRMI(userManager);
             Registry registry = LocateRegistry.createRegistry(20017);
             registry.rebind("WhiteboardServer", whiteboardServer);
             registry.rebind("ChatServer", chatServer);

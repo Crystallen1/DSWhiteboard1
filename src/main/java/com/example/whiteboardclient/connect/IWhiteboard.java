@@ -6,8 +6,9 @@ import com.example.whiteboardclient.listener.IWhiteboardListener;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
-public interface IWhiteboard extends Remote, Serializable {
+public interface IWhiteboard extends Remote, Serializable,IClientService {
     void drawRect(Rectangle rectangle) throws RemoteException;
 
     void drawCircle(Circle circle) throws RemoteException;
@@ -30,5 +31,11 @@ public interface IWhiteboard extends Remote, Serializable {
     UserManager getUserManager()throws RemoteException;
 
     boolean isUserExists(String username)throws RemoteException;
+
+    List<Shape> loadCanvas() throws RemoteException ;
+    void saveCanvas()throws RemoteException;
+    void saveAsCanvas(String filePath)throws RemoteException;
+    void openFile(String filePath)throws RemoteException;
+    void newFile()throws RemoteException;
 
 }

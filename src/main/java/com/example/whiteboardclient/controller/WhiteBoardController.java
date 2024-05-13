@@ -13,16 +13,21 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.stage.WindowEvent;
 
 import java.io.Serializable;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.util.List;
 
 
 public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater {
     @FXML public Button ovelButton;
     @FXML public ColorPicker colorPicker;
+    @FXML
+    public Button eraser;
     @FXML
     private Canvas canvas;
     @FXML private Button freeDrawButton;
@@ -40,7 +45,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
 
 
-    public void initialize() {
+    public void initialize() throws RemoteException {
         try {
             String remoteObjectName = "//localhost:20017/WhiteboardServer";
             // RMI 服务器查找
@@ -51,7 +56,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
                 alert.show();
                 return;
             }
-                WhiteboardListener listener = new WhiteboardListener(this);
+            WhiteboardListener listener = new WhiteboardListener(this);
             server.addWhiteboardListener(listener);
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
@@ -66,10 +71,40 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             startY = event.getY();
             snapshot = canvas.snapshot(new SnapshotParameters(), null);  // 捕捉初始状态
         });
+        updateCanvas(server);
     }
     private void prepareCanvas(GraphicsContext gc) {
         gc.setStroke(Color.BLACK); // 设置画笔颜色
         gc.setLineWidth(2); // 设置画笔宽度
+    }
+    public void clearCanvas(Canvas canvas) {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        // 设置填充颜色为白色（或其他任何你希望的颜色）
+        gc.setFill(Color.WHITE);
+
+        // 填充整个画布
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    public void updateCanvas(IWhiteboard server) throws RemoteException {
+        clearCanvas(canvas);
+        List<Shape> origin =server.loadCanvas();
+        for (int i = 0; i < origin.size(); i++) {
+            if (origin.get(i).getType().equals("triangle")){
+                displayTriangle((Triangle) origin.get(i));
+            } else if (origin.get(i).getType().equals("rectangle")) {
+                displayRect((Rectangle) origin.get(i));
+            }else if (origin.get(i).getType().equals("line")){
+                displayLine((Line) origin.get(i));
+            }else if (origin.get(i).getType().equals("circle")){
+                displayCircle((Circle) origin.get(i));
+            } else if (origin.get(i).getType().equals("oval")) {
+                displayOval((Oval) origin.get(i));
+            } else if (origin.get(i).getType().equals("text")) {
+                displayText((TextItem) origin.get(i));
+            }
+        }
     }
 
     private void clearEventHandlers() {
@@ -85,6 +120,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onFreeDraw(ActionEvent actionEvent) {
         clearEventHandlers();
+        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
 
         canvas.setOnMouseDragged(event -> {
             double endX = event.getX();
@@ -103,9 +139,31 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         });
 
     }
+    public void onEraser(ActionEvent actionEvent) {
+        clearEventHandlers();
+        gc.setStroke(Color.WHITE); // 设置画笔颜色为背景颜色
+
+        canvas.setOnMouseDragged(event -> {
+            double endX = event.getX();
+            double endY = event.getY();
+            gc.strokeLine(startX, startY, endX, endY); // 绘制线条到 Canvas
+            try {
+                // 发送绘制数据到服务器
+                server.freeDraw(new Line(Color.WHITE.toString(),startX, startY, endX, endY ));
+                //server.drawLine(new Line(startX, startY, endX, endY, "black"));
+            } catch (Exception e) {
+                System.err.println("Error sending line to server: " + e.getMessage());
+                e.printStackTrace();
+            }
+            startX = endX;
+            startY = endY;
+        });
+    }
 
     public void onDrawRectangle(ActionEvent actionEvent) {
         clearEventHandlers();
+        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
 
@@ -134,6 +192,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawCircle(ActionEvent actionEvent) {
         clearEventHandlers();
+        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -162,6 +221,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawOval(ActionEvent actionEvent) {
         clearEventHandlers();
+        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -195,6 +255,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawTriangle(ActionEvent actionEvent) {
         clearEventHandlers();
+        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -225,6 +286,8 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     }
 
     public void onDrawText(ActionEvent actionEvent) {
+        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+
         canvas.setOnMouseClicked(event -> {
             TextInputDialog textInputDialog = new TextInputDialog("Text here");
             textInputDialog.setTitle("Input Text");
@@ -296,7 +359,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayText(TextItem textItem) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(textItem.getColor()));
-            gc.strokeText(textItem.getText(),textItem.getX(),textItem.getY());
+            gc.strokeText(textItem.getText(),textItem.getStartX(),textItem.getStartY());
         });
     }
 
@@ -311,6 +374,11 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double height = Math.abs(endY - rectangle.getStartY());
             gc.strokeRect(Math.min(rectangle.getStartX(), endX), Math.min(rectangle.getStartY(), endY), width, height);
         });
+    }
+
+    @Override
+    public void updateCanvas() throws RemoteException{
+        updateCanvas(server);
     }
 
     public void onColorSelected(ActionEvent actionEvent) {
@@ -329,4 +397,5 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             e.printStackTrace();
         }
     }
+
 }

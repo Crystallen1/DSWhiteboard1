@@ -47,4 +47,9 @@ public class WhiteboardListener extends UnicastRemoteObject implements IWhiteboa
         uiUpdater.displayText(text);
     }
 
+    @Override
+    public void updateCanvas() throws RemoteException {
+        uiUpdater.updateCanvas();
+    }
+
 }

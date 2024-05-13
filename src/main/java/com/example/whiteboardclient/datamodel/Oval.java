@@ -5,7 +5,7 @@ public class Oval extends Shape {
     private double endY;
 
     public Oval(String color, double startX, double startY, double endX, double endY) {
-        super(color, startX, startY);
+        super(color, startX, startY,"oval");
         this.endX = endX;
         this.endY = endY;
     }

@@ -20,6 +20,7 @@
             <Button fx:id="ovelButton" text="椭圆" onAction="#onDrawOval"/>
             <Button fx:id="triangleButton" text="三角形" onAction="#onDrawTriangle"/>
             <Button fx:id="textButton" text="文字" onAction="#onDrawText"/>
+            <Button fx:id="eraser" text="橡皮" onAction="#onEraser"/>
             <ColorPicker fx:id="colorPicker" onAction="#onColorSelected"/>
         </ToolBar>
     </VBox>

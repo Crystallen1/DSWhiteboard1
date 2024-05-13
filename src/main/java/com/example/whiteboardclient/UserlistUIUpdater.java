@@ -7,5 +7,9 @@ import com.example.whiteboardclient.datamodel.UserManager;
 public interface UserlistUIUpdater {
     void addUserToList(UserManager userManager);
     Boolean showRequestDialog(String username);
+    void warnSameUsername(String username);
+
+    void updateUserListDisconnected(String username);
+    void shutdown();
 }
 

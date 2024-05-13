@@ -8,7 +8,7 @@ public class Line extends Shape implements Serializable {
 
     // 构造方法
     public Line(String color, double startX, double startY, double endX, double endY) {
-        super(color, startX, startY);
+        super(color, startX, startY,"line");
         this.endX = endX;
         this.endY = endY;
     }
