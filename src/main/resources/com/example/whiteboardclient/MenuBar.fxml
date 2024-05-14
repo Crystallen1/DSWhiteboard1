@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<MenuBar xmlns:fx="http://javafx.com/fxml" fx:id="menuBar" fx:controller="com.example.whiteboardclient.controller.MenuBarController">
+                <Menu text="File" >
+                    <MenuItem text="New" onAction="#handleNew"/>
+                    <MenuItem text="Open" onAction="#handleOpen"/>
+                    <MenuItem text="Save" onAction="#handleSave"/>
+                    <MenuItem text="Save As" onAction="#handleSaveAs"/>
+                    <MenuItem text="Close" onAction="#handleClose"/>
+                </Menu>
+</MenuBar>

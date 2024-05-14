@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.Serializable;
 import java.rmi.Naming;
@@ -27,13 +28,13 @@ public class UserListController implements Serializable,UserlistUIUpdater {
 
 
     private void kickUser(String username) throws RemoteException {
-        if (username.equals("admin")){
+        if (server.isUserAdmin(username)){
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "you can't kick yourself");
                 alert.showAndWait();
             });
         }else {
-            server.kickUser(username);
+            server.kickUser(username,"You have been kicked");
             System.out.println("Kicking user: " + username);
         }
     }
@@ -90,17 +91,19 @@ public class UserListController implements Serializable,UserlistUIUpdater {
     }
 
     @Override
-    public void shutdown() {
+    public void shutdown(String message) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "you have been kicked");
+            Alert alert = new Alert(Alert.AlertType.ERROR, message);
             alert.showAndWait();
-            System.exit(0);  // 或者其他适当的停止机制
+            Stage stage = (Stage) userList.getScene().getWindow();
+            stage.close();
+//            System.exit(0);  // 或者其他适当的停止机制
         });
     }
 
     public void initialize() throws RemoteException {
         try {
-            String remoteObjectName = "//localhost:20017/UserServer";
+            String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/UserServer";
             // RMI 服务器查找
             server = (IUserlist) Naming.lookup(remoteObjectName);
             UserlistListener listener = new UserlistListener(this,WhiteBoardApplication.isAdmin(),WhiteBoardApplication.getUsername());
@@ -114,6 +117,12 @@ public class UserListController implements Serializable,UserlistUIUpdater {
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
+            // 显示错误弹出窗口
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
+            alert.showAndWait();
+
+            // Optional: 关闭主窗口
+            System.exit(1);
         }
 
         userList.setCellFactory(param -> new ListCell<String>() {

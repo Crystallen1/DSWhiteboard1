@@ -47,13 +47,13 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
         this.userManager = userManager;
     }
 
-    protected synchronized void notifyListeners(UserManager userManager,String username)throws RemoteException {
+    protected synchronized void notifyListeners(UserManager userManager,String username,String message)throws RemoteException {
         for (IUserlistListener listener : listeners) {
             listener.updateUserManager(userManager);
         }
         for (IUserlistListener listener : listeners) {
             if (listener.getListenerName().equals(username)){
-                listener.kick();
+                listener.kick(message);
             }
         }
     }
@@ -92,10 +92,10 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     }
 
     @Override
-    public synchronized void kickUser(String username) throws RemoteException{
+    public void kickUser(String username,String message) throws RemoteException{
         System.out.println("kick user:"+username);
         userManager.deleteUser(username);
-        notifyListeners(userManager,username);
+        notifyListeners(userManager,username,message);
     }
 
     @Override
@@ -112,9 +112,9 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     }
 
     @Override
-    public synchronized boolean isUserExists(String username) throws RemoteException {
+    public synchronized boolean isUserAdmin(String username) throws RemoteException {
         for (int i = 0; i < userManager.getUsers().size(); i++) {
-            if (Objects.equals(userManager.getUsers().get(i).getUsername(), username)){
+            if (userManager.isAdmin(username)){
                 return true;
             }
         }

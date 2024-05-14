@@ -57,17 +57,17 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized void saveCanvas() throws RemoteException {
+    public void saveCanvas() throws RemoteException {
         storage.saveShapes();
     }
 
     @Override
-    public synchronized void saveAsCanvas(String filePath)throws RemoteException {
+    public void saveAsCanvas(String filePath)throws RemoteException {
         storage.saveAsShapes(filePath);
     }
 
     @Override
-    public synchronized void openFile(String filePath) throws RemoteException {
+    public void openFile(String filePath) throws RemoteException {
         storage.loadShapesFromFile(filePath);
         for (IWhiteboardListener listener : listeners) {
             listener.updateCanvas();

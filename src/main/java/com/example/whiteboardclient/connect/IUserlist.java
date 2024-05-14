@@ -14,12 +14,12 @@ public interface IUserlist extends Remote, Serializable {
     void addUserlistListener(IUserlistListener listener) throws RemoteException;
     void createAdmin(User user) throws RemoteException;
     void createUser(User user) throws RemoteException;
-    void kickUser(String username)throws RemoteException;
+    void kickUser(String username,String message)throws RemoteException;
     void joinUser(String username)throws RemoteException;
     UserManager getUserManager() throws RemoteException;
     void sendMessage(String message) throws RemoteException;
     String receiveMessage() throws RemoteException;
-    boolean isUserExists(String username)throws RemoteException;
+    boolean isUserAdmin(String username)throws RemoteException;
 
     void setApprove()throws RemoteException;
 

@@ -26,7 +26,7 @@ public class CreateWhiteBoard {
         if (args.length != 3) {
             String serverIPAddress = "localhost";
             int serverPort = 20017;
-            String username = "admin";
+            String username = "cherrim";
 
             System.err.println("Usage: java CreateWhiteBoard <serverIPAddress> <serverPort> <username>");
             WhiteBoardApplication.startWhiteBoard(serverIPAddress, serverPort, username,true);

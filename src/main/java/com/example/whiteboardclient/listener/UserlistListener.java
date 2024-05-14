@@ -60,7 +60,7 @@ public class UserlistListener extends UnicastRemoteObject implements IUserlistLi
     }
 
     @Override
-    public void kick() throws RemoteException {
-        userlistUIUpdater.shutdown();
+    public void kick(String message) throws RemoteException {
+        userlistUIUpdater.shutdown(message);
     }
 }

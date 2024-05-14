@@ -10,6 +10,6 @@ public interface UserlistUIUpdater {
     void warnSameUsername(String username);
 
     void updateUserListDisconnected(String username);
-    void shutdown();
+    void shutdown(String message);
 }
 

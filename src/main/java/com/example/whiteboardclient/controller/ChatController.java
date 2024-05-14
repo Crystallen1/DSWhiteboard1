@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.Serializable;
 import java.rmi.Naming;
@@ -25,7 +26,7 @@ public class ChatController  implements Serializable, ChatUIUpdater {
 
     public void initialize() {
         try {
-            String remoteObjectName = "//localhost:20017/ChatServer";
+            String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/ChatServer";
             // RMI 服务器查找
             server = (IChatService) Naming.lookup(remoteObjectName);
             ChatListener listener = new ChatListener(this);
@@ -33,6 +34,12 @@ public class ChatController  implements Serializable, ChatUIUpdater {
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
+            // 显示错误弹出窗口
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
+            alert.showAndWait();
+
+            // Optional: 关闭主窗口
+            System.exit(1);
         }
     }
     public void sendChat(ActionEvent actionEvent) throws RemoteException {

@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.Serializable;
@@ -47,7 +48,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void initialize() throws RemoteException {
         try {
-            String remoteObjectName = "//localhost:20017/WhiteboardServer";
+            String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/WhiteboardServer";
             // RMI 服务器查找
             server = (IWhiteboard) Naming.lookup(remoteObjectName);
             if (!server.isUserExists(WhiteBoardApplication.getUsername())) {
@@ -61,6 +62,12 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
+            // 显示错误弹出窗口
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
+            alert.showAndWait();
+
+            // Optional: 关闭主窗口
+            System.exit(1);
         }
 
 

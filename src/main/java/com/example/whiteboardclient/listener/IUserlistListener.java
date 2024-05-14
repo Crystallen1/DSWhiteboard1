@@ -15,6 +15,6 @@ public interface IUserlistListener extends Remote, Serializable {
     void sameUsername(String username)throws RemoteException;
     void userDisconnected()throws RemoteException;
     String getListenerName()throws RemoteException;
-    void kick()throws RemoteException;
+    void kick(String message)throws RemoteException;
 
 }

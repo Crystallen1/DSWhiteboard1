@@ -39,7 +39,7 @@ public class UserManager implements Serializable {
         this.adminUser = adminUser;
     }
 
-    public boolean isAdmin(User user) {
-        return user == adminUser;
+    public boolean isAdmin(String username) {
+        return Objects.equals(username, adminUser.getUsername());
     }
 }
