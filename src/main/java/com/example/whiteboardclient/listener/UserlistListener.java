@@ -46,15 +46,6 @@ public class UserlistListener extends UnicastRemoteObject implements IUserlistLi
     }
 
     @Override
-    public void userDisconnected() throws RemoteException {
-        if (userlistUIUpdater != null) {
-            userlistUIUpdater.updateUserListDisconnected(username);
-        }
-        // 可以在这里添加更多的逻辑，比如日志记录、发送警告等
-        System.out.println(username + " has disconnected.");
-    }
-
-    @Override
     public String getListenerName() throws RemoteException {
         return username;
     }

@@ -13,7 +13,6 @@ public interface IUserlistListener extends Remote, Serializable {
     void joinRequest(String username)throws RemoteException;
     boolean getAdmin()throws RemoteException;
     void sameUsername(String username)throws RemoteException;
-    void userDisconnected()throws RemoteException;
     String getListenerName()throws RemoteException;
     void kick(String message)throws RemoteException;
 

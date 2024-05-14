@@ -21,6 +21,4 @@ public interface IUserlist extends Remote, Serializable {
     String receiveMessage() throws RemoteException;
     boolean isUserAdmin(String username)throws RemoteException;
 
-    void setApprove()throws RemoteException;
-
 }

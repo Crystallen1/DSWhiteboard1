@@ -96,10 +96,5 @@ public class WhiteBoardApplication extends Application implements Serializable {
         WhiteBoardApplication.admin = admin;
         launch();
     }
-
-    public static void main(String[] args) {
-
-        launch();
-    }
 }
 

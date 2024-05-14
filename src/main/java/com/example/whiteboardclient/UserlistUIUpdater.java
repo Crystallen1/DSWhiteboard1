@@ -8,8 +8,6 @@ public interface UserlistUIUpdater {
     void addUserToList(UserManager userManager);
     Boolean showRequestDialog(String username);
     void warnSameUsername(String username);
-
-    void updateUserListDisconnected(String username);
     void shutdown(String message);
 }
 

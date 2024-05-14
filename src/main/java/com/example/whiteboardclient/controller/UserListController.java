@@ -86,11 +86,6 @@ public class UserListController implements Serializable,UserlistUIUpdater {
     }
 
     @Override
-    public void updateUserListDisconnected(String username) {
-
-    }
-
-    @Override
     public void shutdown(String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR, message);

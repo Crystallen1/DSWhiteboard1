@@ -121,9 +121,4 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
         return false;
     }
 
-    @Override
-    public void setApprove() {
-        isApprove=true;
-    }
-
 }
