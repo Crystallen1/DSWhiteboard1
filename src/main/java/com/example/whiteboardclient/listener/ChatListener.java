@@ -1,7 +1,6 @@
 package com.example.whiteboardclient.listener;
 
-import com.example.whiteboardclient.ChatUIUpdater;
-import com.example.whiteboardclient.UserlistUIUpdater;
+import com.example.whiteboardclient.UIUpdater.ChatUIUpdater;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;

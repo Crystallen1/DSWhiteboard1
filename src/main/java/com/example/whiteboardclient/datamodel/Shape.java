@@ -8,16 +8,23 @@ public abstract class Shape implements Serializable {
     protected double startY;
     protected String type;
 
+    protected int size;
+
     public String getType() {
         return type;
     }
 
+    public int getSize() {
+        return size;
+    }
+
     // 构造方法
-    public Shape(String color, double startX, double startY,String type) {
+    public Shape(String color, double startX, double startY,String type,int size) {
         this.color = color;
         this.startX = startX;
         this.startY = startY;
         this.type = type;
+        this.size=size;
     }
 
     // 获取颜色

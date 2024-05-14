@@ -6,8 +6,8 @@ public class Rectangle extends Shape implements Serializable {
     private double endX;
     private double endY;
 
-    public Rectangle(String color, double startX, double startY, double endX, double endY) {
-        super(color, startX, startY,"rectangle");
+    public Rectangle(String color, double startX, double startY, double endX, double endY,int size) {
+        super(color, startX, startY,"rectangle",size);
         this.endX = endX;
         this.endY = endY;
     }

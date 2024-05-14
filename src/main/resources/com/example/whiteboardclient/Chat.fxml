@@ -10,7 +10,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.whiteboardclient.controller.ChatController"
       spacing="5">
-    <TextArea fx:id="chatArea" editable="false" prefHeight="200"/>
+    <TextArea fx:id="chatArea" editable="false" prefHeight="200" prefWidth="200"/>
     <TextField fx:id="chatInput"/>
     <Button text="Send" onAction="#sendChat"/>
 </VBox>

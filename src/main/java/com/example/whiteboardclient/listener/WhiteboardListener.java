@@ -1,8 +1,6 @@
 package com.example.whiteboardclient.listener;
 
-import com.example.whiteboardclient.WhiteboardUIUpdater;
-import javafx.application.Platform;
-import javafx.scene.paint.Color;
+import com.example.whiteboardclient.UIUpdater.WhiteboardUIUpdater;
 import com.example.whiteboardclient.datamodel.*;
 
 import java.io.Serializable;

@@ -1,19 +1,14 @@
 package com.example.whiteboardclient.controller;
 
-import com.example.whiteboardclient.ChatUIUpdater;
-import com.example.whiteboardclient.UserlistUIUpdater;
+import com.example.whiteboardclient.UIUpdater.ChatUIUpdater;
 import com.example.whiteboardclient.WhiteBoardApplication;
 import com.example.whiteboardclient.connect.IChatService;
-import com.example.whiteboardclient.connect.IUserlist;
-import com.example.whiteboardclient.connect.IWhiteboard;
 import com.example.whiteboardclient.listener.ChatListener;
-import com.example.whiteboardclient.listener.WhiteboardListener;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.io.Serializable;
 import java.rmi.Naming;

@@ -5,8 +5,8 @@ public class Triangle extends Shape {
     private double endY;
     private double midX;
 
-    public Triangle(String color, double startX, double startY, double endX, double endY, double midX) {
-        super(color, startX, startY,"triangle");
+    public Triangle(String color, double startX, double startY, double endX, double endY, double midX,int size) {
+        super(color, startX, startY,"triangle",size);
         this.endX = endX;
         this.endY = endY;
         this.midX = midX;

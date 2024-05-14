@@ -16,7 +16,10 @@ module com.example.whiteboardclient {
     opens com.example.whiteboardclient.listener to javafx.fxml;
     exports com.example.whiteboardclient.datamodel;
     opens com.example.whiteboardclient.datamodel to javafx.fxml;
-    exports com.example.whiteboardclient.connect to java.rmi;
+    exports com.example.whiteboardclient.connect;
+    opens com.example.whiteboardclient.connect to javafx.fxml;
+    exports com.example.whiteboardclient.UIUpdater;
+    opens com.example.whiteboardclient.UIUpdater to javafx.fxml;
 
 
 }

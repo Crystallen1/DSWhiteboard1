@@ -1,4 +1,4 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.connect;
 
 import com.example.whiteboardclient.connect.IChatService;
 import com.example.whiteboardclient.datamodel.UserManager;
@@ -17,7 +17,7 @@ public class ChatRMI extends UnicastRemoteObject implements IChatService, Serial
     private UserManager userManager;
     private List<IChatListener> listeners = new CopyOnWriteArrayList<>();
 
-    protected ChatRMI(UserManager userManager) throws RemoteException {
+    public ChatRMI(UserManager userManager) throws RemoteException {
         super();
         this.userManager = userManager;
     }

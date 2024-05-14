@@ -1,13 +1,10 @@
 package com.example.whiteboardclient.listener;
 
 
-import com.example.whiteboardclient.UserlistUIUpdater;
-import com.example.whiteboardclient.WhiteboardUIUpdater;
-import com.example.whiteboardclient.datamodel.User;
+import com.example.whiteboardclient.UIUpdater.UserlistUIUpdater;
 import com.example.whiteboardclient.datamodel.UserManager;
 
 import java.io.Serializable;
-import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

@@ -1,13 +1,14 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.datamodel;
 
 import com.example.whiteboardclient.datamodel.Shape;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CanvasStorage implements Serializable{
-    private List<Shape> shapes = new ArrayList<>();
+    private List<Shape> shapes = new CopyOnWriteArrayList<>();
     private String filePath = "canvas.dat";
 
     public CanvasStorage() {

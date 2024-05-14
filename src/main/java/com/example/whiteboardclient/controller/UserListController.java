@@ -1,19 +1,15 @@
 package com.example.whiteboardclient.controller;
 
-import com.example.whiteboardclient.UserlistUIUpdater;
+import com.example.whiteboardclient.UIUpdater.UserlistUIUpdater;
 import com.example.whiteboardclient.WhiteBoardApplication;
 import com.example.whiteboardclient.connect.IUserlist;
-import com.example.whiteboardclient.connect.IWhiteboard;
 import com.example.whiteboardclient.datamodel.User;
 import com.example.whiteboardclient.datamodel.UserManager;
 import com.example.whiteboardclient.listener.UserlistListener;
-import com.example.whiteboardclient.listener.WhiteboardListener;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 

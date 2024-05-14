@@ -1,4 +1,4 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.UIUpdater;
 
 
 import com.example.whiteboardclient.datamodel.User;

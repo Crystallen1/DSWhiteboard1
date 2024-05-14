@@ -1,4 +1,4 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.connect;
 
 import com.example.whiteboardclient.connect.IUserlist;
 import com.example.whiteboardclient.datamodel.User;

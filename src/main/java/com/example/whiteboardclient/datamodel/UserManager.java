@@ -5,13 +5,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UserManager implements Serializable {
     private List<User> users;
     private User adminUser;
 
     public UserManager() {
-        this.users = new ArrayList<>();
+        this.users = new CopyOnWriteArrayList<>();
         this.adminUser = null;
     }
 

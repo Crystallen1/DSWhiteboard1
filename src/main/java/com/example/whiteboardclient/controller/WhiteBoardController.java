@@ -4,7 +4,7 @@ import com.example.whiteboardclient.WhiteBoardApplication;
 import com.example.whiteboardclient.connect.IWhiteboard;
 import com.example.whiteboardclient.datamodel.*;
 import com.example.whiteboardclient.listener.WhiteboardListener;
-import com.example.whiteboardclient.WhiteboardUIUpdater;
+import com.example.whiteboardclient.UIUpdater.WhiteboardUIUpdater;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,10 +14,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.Serializable;
@@ -138,7 +136,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             gc.strokeLine(startX, startY, endX, endY); // 绘制线条到 Canvas
             try {
                 // 发送绘制数据到服务器
-                server.freeDraw(new Line(selectedColor.toString(),startX, startY, endX, endY ));
+                server.freeDraw(new Line(selectedColor.toString(),startX, startY, endX, endY,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -183,7 +181,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             gc.strokeLine(startX, startY, endX, endY); // 绘制线条到 Canvas
             try {
                 // 发送绘制数据到服务器
-                server.freeDraw(new Line(Color.WHITE.toString(),startX, startY, endX, endY ));
+                server.freeDraw(new Line(Color.WHITE.toString(),startX, startY, endX, endY,sizeComboBox.getValue()));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -216,7 +214,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double endY = event.getY();
             try {
                 // 发送绘制数据到服务器
-                server.drawRect(new Rectangle(selectedColor.toString(),startX, startY, endX, endY ));
+                server.drawRect(new Rectangle(selectedColor.toString(),startX, startY, endX, endY,5 ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -246,7 +244,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double endY = event.getY();
             try {
                 // 发送绘制数据到服务器
-                server.drawCircle(new Circle(selectedColor.toString(),startX, startY, endX, endY ));
+                server.drawCircle(new Circle(selectedColor.toString(),startX, startY, endX, endY,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -280,7 +278,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double endY = event.getY();
             try {
                 // 发送绘制数据到服务器
-                server.drawOval(new Oval(selectedColor.toString(),startX, startY, endX, endY ));
+                server.drawOval(new Oval(selectedColor.toString(),startX, startY, endX, endY,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -314,7 +312,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
             try {
                 // 发送绘制数据到服务器
-                server.drawTriangle(new Triangle(selectedColor.toString(),startX, startY, endX, endY,midX ));
+                server.drawTriangle(new Triangle(selectedColor.toString(),startX, startY, endX, endY,midX,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
@@ -335,7 +333,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
                 gc.fillText(text, event.getX(), event.getY());
                 try {
                     // 发送绘制数据到服务器
-                    server.drawText(new TextItem(text,startX, startY, 1, "black" ));
+                    server.drawText(new TextItem(text,startX, startY, "black",1));
                     //server.drawLine(new Line(startX, startY, endX, endY, "black"));
                 } catch (Exception e) {
                     System.err.println("Error sending line to server: " + e.getMessage());
@@ -351,6 +349,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayLine(Line line) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(line.getColor()));
+            gc.setLineWidth(line.getSize());
             gc.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
         });
     }
@@ -359,6 +358,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayTriangle(Triangle triangle) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(triangle.getColor()));
+            gc.setLineWidth(triangle.getSize());
             double endX = triangle.getEndX();
             double endY = triangle.getEndY();
             double midX = triangle.getMidX();
@@ -372,6 +372,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayCircle(Circle circle) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(circle.getColor()));
+            gc.setLineWidth(circle.getSize());
             double endX = circle.getEndX();
             double endY = circle.getEndY();
             double radius = Math.sqrt(Math.pow(endX - circle.getStartX(), 2) + Math.pow(endY - circle.getStartY(), 2));
@@ -383,6 +384,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayOval(Oval oval) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(oval.getColor()));
+            gc.setLineWidth(oval.getSize());
             double endX = oval.getEndX();
             double endY = oval.getEndY();
             double radiusX = Math.abs(endX -  oval.getStartX()) / 2;
@@ -400,6 +402,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayText(TextItem textItem) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(textItem.getColor()));
+            gc.setLineWidth(textItem.getSize());
             gc.strokeText(textItem.getText(),textItem.getStartX(),textItem.getStartY());
         });
     }
@@ -408,6 +411,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void displayRect(Rectangle rectangle) {
         Platform.runLater(() -> {
             gc.setStroke(Color.web(rectangle.getColor()));
+            gc.setLineWidth(rectangle.getSize());
 
             double endX = rectangle.getEndX();
             double endY = rectangle.getEndY();

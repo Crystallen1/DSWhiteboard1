@@ -12,7 +12,7 @@
            fx:controller="com.example.whiteboardclient.controller.WhiteBoardController"
            >
     <VBox>
-        <Canvas fx:id="canvas" width="800" height="600"/>
+        <Canvas fx:id="canvas" width="500" height="300"/>
         <ToolBar>
             <Button fx:id="freeDrawButton" text="自由画笔" onAction="#onFreeDraw"/>
             <Button fx:id="rectangleButton" text="矩形" onAction="#onDrawRectangle"/>

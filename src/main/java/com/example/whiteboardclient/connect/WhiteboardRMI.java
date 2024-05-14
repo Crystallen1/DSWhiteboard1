@@ -1,4 +1,4 @@
-package com.example.whiteboardclient;
+package com.example.whiteboardclient.connect;
 
 import com.example.whiteboardclient.connect.IWhiteboard;
 import com.example.whiteboardclient.datamodel.*;
@@ -9,7 +9,6 @@ import com.example.whiteboardclient.listener.IWhiteboardListener;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +24,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     CanvasStorage storage;
 
 
-    protected WhiteboardRMI(UserManager userManager) throws RemoteException {
+    public WhiteboardRMI(UserManager userManager) throws RemoteException {
         super();
         this.userManager=userManager;
         this.storage= new CanvasStorage();

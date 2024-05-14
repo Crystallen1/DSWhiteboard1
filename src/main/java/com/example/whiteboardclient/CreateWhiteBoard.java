@@ -1,5 +1,8 @@
 package com.example.whiteboardclient;
 
+import com.example.whiteboardclient.connect.ChatRMI;
+import com.example.whiteboardclient.connect.UserRMI;
+import com.example.whiteboardclient.connect.WhiteboardRMI;
 import com.example.whiteboardclient.datamodel.UserManager;
 
 import java.rmi.registry.LocateRegistry;

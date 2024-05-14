@@ -6,8 +6,8 @@ public class Circle extends Shape implements Serializable {
     private double endX;
     private double endY;
 
-    public Circle(String color, double startX, double startY, double endX, double endY) {
-        super(color, startX, startY,"circle");
+    public Circle(String color, double startX, double startY, double endX, double endY,int size) {
+        super(color, startX, startY,"circle",size);
         this.endX = endX;
         this.endY = endY;
     }
