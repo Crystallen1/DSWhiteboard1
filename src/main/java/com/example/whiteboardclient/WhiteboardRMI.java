@@ -75,7 +75,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized void newFile() throws RemoteException {
+    public void newFile() throws RemoteException {
         storage.clearShape();
         for (IWhiteboardListener listener : listeners) {
             listener.updateCanvas();

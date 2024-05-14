@@ -4,10 +4,12 @@ import com.example.whiteboardclient.WhiteBoardApplication;
 import com.example.whiteboardclient.connect.IChatService;
 import com.example.whiteboardclient.connect.IUserlist;
 import com.example.whiteboardclient.connect.IWhiteboard;
+import com.example.whiteboardclient.datamodel.User;
 import com.example.whiteboardclient.datamodel.UserManager;
 import com.example.whiteboardclient.listener.ChatListener;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
@@ -49,7 +51,27 @@ public class MenuBarController implements Serializable {
         }
     }
     public void handleNew(ActionEvent actionEvent) throws RemoteException {
-        whiteboardServer.newFile();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save current canvas", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    whiteboardServer.saveCanvas();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    whiteboardServer.newFile();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                try {
+                    whiteboardServer.newFile();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void handleOpen(ActionEvent actionEvent) throws RemoteException {
@@ -74,7 +96,18 @@ public class MenuBarController implements Serializable {
     }
 
     public void handleSave(ActionEvent actionEvent) throws RemoteException {
-        whiteboardServer.saveCanvas();
+        try {
+            whiteboardServer.saveCanvas();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Successful saved!");
+            alert.showAndWait();
+        } catch (RemoteException e) {
+            System.err.println("RMI server connection error: " + e.getMessage());
+            e.printStackTrace();
+            // 显示错误弹出窗口
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed: " + e.getMessage());
+            alert.showAndWait();
+        }
+
     }
 
     public void handleSaveAs(ActionEvent actionEvent) throws RemoteException {
@@ -108,12 +141,49 @@ public class MenuBarController implements Serializable {
     }
 
     public void handleClose(ActionEvent actionEvent) throws RemoteException {
-        UserManager userManager=userlistServer.getUserManager();
-        for (int i = 0; i < userManager.getUsers().size(); i++) {
-            String username =userManager.getUsers().get(i).getUsername();
-            userlistServer.kickUser(username,"The manager close the server");
-            System.out.println("Kicking user: " + username);
-        }
-        System.exit(0);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save current canvas", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    whiteboardServer.saveCanvas();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                UserManager userManager= null;
+                try {
+                    userManager = userlistServer.getUserManager();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                for (int i = 0; i < userManager.getUsers().size(); i++) {
+                    String username =userManager.getUsers().get(i).getUsername();
+                    try {
+                        userlistServer.kickUser(username,"The manager close the server");
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("Kicking user: " + username);
+                }
+                System.exit(0);
+            } else {
+                UserManager userManager= null;
+                try {
+                    userManager = userlistServer.getUserManager();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                for (int i = 0; i < userManager.getUsers().size(); i++) {
+                    String username =userManager.getUsers().get(i).getUsername();
+                    try {
+                        userlistServer.kickUser(username,"The manager close the server");
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("Kicking user: " + username);
+                }
+                System.exit(0);
+            }
+        });
+
     }
 }

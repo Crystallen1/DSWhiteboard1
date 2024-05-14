@@ -45,7 +45,7 @@ public class WhiteBoardApplication extends Application implements Serializable {
 
         FXMLLoader fxmlLoader = new FXMLLoader(WhiteBoardApplication.class.getResource("MainLayout.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
+        stage.setTitle("WhiteBoard");
         stage.setScene(scene);
         stage.show();
 

@@ -8,12 +8,14 @@ import com.example.whiteboardclient.WhiteboardUIUpdater;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -127,6 +129,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onFreeDraw(ActionEvent actionEvent) {
         clearEventHandlers();
+        gc.setLineWidth(5);
         gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
 
         canvas.setOnMouseDragged(event -> {
@@ -147,6 +150,30 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     }
     public void onEraser(ActionEvent actionEvent) {
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("选择橡皮大小");
+
+        VBox vbox = new VBox();
+        vbox.setPadding(new Insets(10));
+
+        Label label = new Label("请选择橡皮大小：");
+        ComboBox<Integer> sizeComboBox = new ComboBox<>();
+        sizeComboBox.getItems().addAll(5, 10, 15, 20, 25); // 添加不同的橡皮大小
+
+        vbox.getChildren().addAll(label, sizeComboBox);
+        dialog.getDialogPane().setContent(vbox);
+
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        dialog.setResultConverter(button -> {
+            if (button == ButtonType.OK) {
+                gc.setLineWidth(sizeComboBox.getValue());
+                return sizeComboBox.getValue();
+            }
+            return null;
+        });
+        dialog.show();
+
         clearEventHandlers();
         gc.setStroke(Color.WHITE); // 设置画笔颜色为背景颜色
 
@@ -170,6 +197,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void onDrawRectangle(ActionEvent actionEvent) {
         clearEventHandlers();
         gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -200,6 +228,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void onDrawCircle(ActionEvent actionEvent) {
         clearEventHandlers();
         gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -229,6 +258,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void onDrawOval(ActionEvent actionEvent) {
         clearEventHandlers();
         gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -263,6 +293,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void onDrawTriangle(ActionEvent actionEvent) {
         clearEventHandlers();
         gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
             restoreCanvas();
@@ -294,6 +325,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawText(ActionEvent actionEvent) {
         gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setLineWidth(1);
 
         canvas.setOnMouseClicked(event -> {
             TextInputDialog textInputDialog = new TextInputDialog("Text here");

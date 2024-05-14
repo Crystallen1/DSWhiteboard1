@@ -49,13 +49,18 @@ public class MainController {
                 loadMenuBar();
             }else {
                 userlistServer.joinUser(WhiteBoardApplication.getUsername());
-                if ("approve".equals(userlistServer.receiveMessage())){
+                String response = userlistServer.receiveMessage();
+
+                if ("approve".equals(response)){
                     onLoginSuccess();
-                }else {
+                }else if ("disapprove".equals(response)){
                     Alert alert = new Alert(Alert.AlertType.ERROR,"you are not approve!");
                     alert.showAndWait();
-//                    Stage stage = (Stage) mainPane.getScene().getWindow();
-//                    stage.close();
+                    throw new RuntimeException("The manager disapprove");
+                }else if ("same name".equals(response)) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR,"Username duplicate!");
+                    alert.showAndWait();
+                    throw new RuntimeException("Username duplicate!");
                 }
             }
 

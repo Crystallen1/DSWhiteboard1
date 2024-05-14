@@ -60,17 +60,23 @@ public class UserListController implements Serializable,UserlistUIUpdater {
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.YES) {
                     try {
+                        for (int i = 0; i < userList.getItems().size(); i++) {
+                            if (userList.getItems().get(i).equals(username)){
+                                server.sendMessage("same name");
+                                return;
+                            }
+                        }
                         server.createUser(new User(username));
                         server.sendMessage("approve");
                     } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
+                        System.err.println("error: " + e.getMessage());
+                        e.printStackTrace();                    }
                 } else {
                     try {
                         server.sendMessage("disapprove");
                     } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
+                        System.err.println("error: " + e.getMessage());
+                        e.printStackTrace();                    }
                 }
             });
         });

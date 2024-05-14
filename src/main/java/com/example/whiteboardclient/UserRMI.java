@@ -23,12 +23,13 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     private UserManager userManager;
     private boolean isApprove=false;
 
-    private final BlockingQueue<String> messages = new ArrayBlockingQueue<>(10);
+    private final BlockingQueue<String> messages = new ArrayBlockingQueue<>(20);
     public UserManager getUserManager() {
         return userManager;
     }
     @Override
     public synchronized void sendMessage(String message) throws RemoteException {
+        messages.clear();
         messages.add(message);
     }
 
@@ -101,13 +102,13 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     @Override
     public synchronized void joinUser(String username) throws RemoteException {
         System.out.println(username+" want to join");
-        for (int i = 0; i < userManager.getUsers().size(); i++) {
-            if (username.equals(userManager.getUsers().get(i).getUsername())){
-                for (IUserlistListener listener : listeners) {
-                        listener.sameUsername(username);
-                }
-            }
-        }
+//        for (int i = 0; i < userManager.getUsers().size(); i++) {
+//            if (username.equals(userManager.getUsers().get(i).getUsername())){
+//                for (IUserlistListener listener : listeners) {
+//                        listener.sameUsername(username);
+//                }
+//            }
+//        }
         notifyListeners(username);
     }
 
