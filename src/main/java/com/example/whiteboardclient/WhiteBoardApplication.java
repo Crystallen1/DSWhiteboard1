@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.io.Serializable;
@@ -27,6 +28,8 @@ public class WhiteBoardApplication extends Application implements Serializable {
     static int serverPort;
     static String username;
     static boolean admin;
+    private static final long HEARTBEAT_INTERVAL = 5000; // 5 seconds
+    private static boolean running = true;
 
     public static String getUsername() {
         return username;
@@ -53,10 +56,28 @@ public class WhiteBoardApplication extends Application implements Serializable {
         IUserlist userlistServer;
 
         String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/UserServer";
-        // RMI 服务器查找
         userlistServer = (IUserlist) Naming.lookup(remoteObjectName);
+        // heartbeat
+        new Thread(() -> {
+            while (running) {
+                try {
+                    Thread.sleep(HEARTBEAT_INTERVAL);
+                    userlistServer.heartbeat();
+                    System.out.println("still connect");
+                } catch (RemoteException e) {
+                    running = false;
+                    System.out.println("connect broke");
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "manager close the server");
+                        alert.showAndWait();
+                        stage.close();
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         stage.setOnCloseRequest(event -> {
-            // 调用控制器中的断开连接方法
             if (isAdmin()){
                 UserManager userManager= null;
                 try {

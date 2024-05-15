@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -54,25 +55,38 @@ public class MainController {
                 if ("approve".equals(response)){
                     onLoginSuccess();
                 }else if ("disapprove".equals(response)){
-                    Alert alert = new Alert(Alert.AlertType.ERROR,"you are not approve!");
+                    Alert alert = new Alert(Alert.AlertType.ERROR,"The manager did not approve your request to join!");
                     alert.showAndWait();
-                    throw new RuntimeException("The manager disapprove");
+                    throw new RuntimeException("The manager did not approve your request to join!");
                 }else if ("same name".equals(response)) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR,"Username duplicate!");
+                    Alert alert = new Alert(Alert.AlertType.ERROR,"Your username is already taken!");
                     alert.showAndWait();
                     throw new RuntimeException("Username duplicate!");
                 }
             }
 
-        } catch (Exception e) {
+        } catch (RemoteException | NotBoundException e) {
+            // 处理 RMI 相关的异常
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
 
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
             alert.showAndWait();
 
-            if (mainPane.getScene()!=null){
+            if (mainPane.getScene() != null) {
                 Stage stage = (Stage) mainPane.getScene().getWindow();
+                stage.close();
+            }
+        } catch (RuntimeException e) {
+            // 处理人工生成的异常
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
+
+            if (menuBar.getScene() != null) {
+                Stage stage = (Stage) menuBar.getScene().getWindow();
                 stage.close();
             }
         }

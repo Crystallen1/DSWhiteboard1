@@ -77,4 +77,5 @@ public interface IUserlist extends Remote, Serializable {
      */
     boolean isUserAdmin(String username)throws RemoteException;
 
+    void heartbeat()throws RemoteException;
 }

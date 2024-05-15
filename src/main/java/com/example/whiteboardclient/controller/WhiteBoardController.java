@@ -73,7 +73,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         canvas.setOnMousePressed(event -> {
             startX = event.getX();
             startY = event.getY();
-            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // 捕捉初始状态
+            snapshot = canvas.snapshot(new SnapshotParameters(), null);
         });
         updateCanvas(server);
     }
@@ -304,7 +304,6 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             gc.strokePolygon(xPoints, yPoints, 3);
         });
         canvas.setOnMouseReleased(event -> {
-            // 可以在这里发送最终形状数据到服务器
             snapshot = canvas.snapshot(new SnapshotParameters(), null);  // update snapshot
             double endX = event.getX();
             double endY = event.getY();

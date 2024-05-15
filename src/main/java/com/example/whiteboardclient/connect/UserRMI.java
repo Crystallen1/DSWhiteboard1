@@ -120,4 +120,9 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
         return false;
     }
 
+    @Override
+    public void heartbeat() throws RemoteException {
+
+    }
+
 }

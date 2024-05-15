@@ -26,11 +26,11 @@ public class UserListController implements Serializable,UserlistUIUpdater {
     private void kickUser(String username) throws RemoteException {
         if (server.isUserAdmin(username)){
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "you can't kick yourself");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "You can't kick yourself");
                 alert.showAndWait();
             });
         }else {
-            server.kickUser(username,"You have been kicked");
+            server.kickUser(username,"You have been kicked out");
             System.out.println("Kicking user: " + username);
         }
     }
@@ -52,7 +52,7 @@ public class UserListController implements Serializable,UserlistUIUpdater {
     @Override
     public void showRequestDialog(String username) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Allow user " + username + " to join?", ButtonType.YES, ButtonType.NO);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Allow user \"" + username + "\" to join?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.YES) {
                     try {
@@ -89,7 +89,6 @@ public class UserListController implements Serializable,UserlistUIUpdater {
             alert.showAndWait();
             Stage stage = (Stage) userList.getScene().getWindow();
             stage.close();
-//            System.exit(0);  // 或者其他适当的停止机制
         });
     }
 
@@ -126,7 +125,7 @@ public class UserListController implements Serializable,UserlistUIUpdater {
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
-                }); // 为按钮设置动作
+                });
             }
 
             @Override

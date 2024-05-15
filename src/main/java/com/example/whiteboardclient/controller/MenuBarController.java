@@ -73,7 +73,7 @@ public class MenuBarController implements Serializable {
     public void handleOpen(ActionEvent actionEvent) throws RemoteException {
         // Create a FileChooser instance
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("choose .dat file");
+        fileChooser.setTitle("choose *.dat file");
 
         // Set a file extension filter to only allow .dat files
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("DAT files (*.dat)", "*.dat");
@@ -96,7 +96,7 @@ public class MenuBarController implements Serializable {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Successful saved!");
             alert.showAndWait();
         } catch (RemoteException e) {
-            System.err.println("RMI server connection error: " + e.getMessage());
+            System.err.println(e.getMessage());
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed: " + e.getMessage());
             alert.showAndWait();
