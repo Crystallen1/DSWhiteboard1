@@ -17,23 +17,23 @@ import java.rmi.RemoteException;
 public class ChatController  implements Serializable, ChatUIUpdater {
     public TextArea chatArea;
     public TextField chatInput;
-    private IChatService server; // RMI 服务接口
+    private IChatService server; // RMI interface
 
     public void initialize() {
         try {
             String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/ChatServer";
-            // RMI 服务器查找
+            // Look up the RMI server using the constructed remote object name.
             server = (IChatService) Naming.lookup(remoteObjectName);
             ChatListener listener = new ChatListener(this);
             server.addChatListener(listener);
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
-            // 显示错误弹出窗口
+            // Display an error alert dialog to inform the user of the connection failure.
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
             alert.showAndWait();
 
-            // Optional: 关闭主窗口
+            // Close the main application window upon connection failure.
             System.exit(1);
         }
     }

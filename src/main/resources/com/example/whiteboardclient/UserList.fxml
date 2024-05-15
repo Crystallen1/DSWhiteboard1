@@ -6,9 +6,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.text.Text?>
 <VBox xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.whiteboardclient.controller.UserListController"
-            spacing="5">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.whiteboardclient.controller.UserListController"
+      spacing="5">
+    <Text text="UserList"/>
     <ListView fx:id="userList"/>
 </VBox>

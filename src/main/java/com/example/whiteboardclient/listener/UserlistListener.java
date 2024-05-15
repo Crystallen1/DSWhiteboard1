@@ -38,11 +38,6 @@ public class UserlistListener extends UnicastRemoteObject implements IUserlistLi
     }
 
     @Override
-    public void sameUsername(String username) throws RemoteException {
-        userlistUIUpdater.warnSameUsername(username);
-    }
-
-    @Override
     public String getListenerName() throws RemoteException {
         return username;
     }

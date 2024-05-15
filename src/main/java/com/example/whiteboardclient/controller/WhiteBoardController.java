@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Queue;
 
 
 public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater {
@@ -36,8 +37,8 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     @FXML private Button circleButton;
     @FXML private Button triangleButton;
     @FXML private Button textButton;
-    private IWhiteboard server; // RMI 服务接口
-    private double startX, startY; // 绘图起始点
+    private IWhiteboard server; // RMI interface
+    private double startX, startY;
 
     private GraphicsContext gc;
     private WritableImage snapshot;
@@ -49,7 +50,6 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     public void initialize() throws RemoteException {
         try {
             String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/WhiteboardServer";
-            // RMI 服务器查找
             server = (IWhiteboard) Naming.lookup(remoteObjectName);
             if (!server.isUserExists(WhiteBoardApplication.getUsername())) {
                 System.err.println("User does not exist: " + WhiteBoardApplication.getUsername());
@@ -62,15 +62,12 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
-            // 显示错误弹出窗口
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
             alert.showAndWait();
 
-            // Optional: 关闭主窗口
             System.exit(1);
         }
-
-
+        colorPicker.setValue(Color.BLACK);
         gc = canvas.getGraphicsContext2D();
         prepareCanvas(gc);
         canvas.setOnMousePressed(event -> {
@@ -81,88 +78,98 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         updateCanvas(server);
     }
     private void prepareCanvas(GraphicsContext gc) {
-        gc.setStroke(Color.BLACK); // 设置画笔颜色
-        gc.setLineWidth(2); // 设置画笔宽度
+        gc.setStroke(Color.BLACK); // set color
+        gc.setLineWidth(2); // set size
     }
     public void clearCanvas(Canvas canvas) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        // 设置填充颜色为白色（或其他任何你希望的颜色）
         gc.setFill(Color.WHITE);
 
-        // 填充整个画布
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     public void updateCanvas(IWhiteboard server) throws RemoteException {
         clearCanvas(canvas);
-        List<Shape> origin =server.loadCanvas();
-        for (int i = 0; i < origin.size(); i++) {
-            if (origin.get(i).getType().equals("triangle")){
-                displayTriangle((Triangle) origin.get(i));
-            } else if (origin.get(i).getType().equals("rectangle")) {
-                displayRect((Rectangle) origin.get(i));
-            }else if (origin.get(i).getType().equals("line")){
-                displayLine((Line) origin.get(i));
-            }else if (origin.get(i).getType().equals("circle")){
-                displayCircle((Circle) origin.get(i));
-            } else if (origin.get(i).getType().equals("oval")) {
-                displayOval((Oval) origin.get(i));
-            } else if (origin.get(i).getType().equals("text")) {
-                displayText((TextItem) origin.get(i));
+        Queue<Shape> origin =server.loadCanvas();
+        for (Shape shape : origin) {
+            String type = shape.getType();
+            switch (type) {
+                case "triangle":
+                    displayTriangle((Triangle) shape);
+                    break;
+                case "rectangle":
+                    displayRect((Rectangle) shape);
+                    break;
+                case "line":
+                    displayLine((Line) shape);
+                    break;
+                case "circle":
+                    displayCircle((Circle) shape);
+                    break;
+                case "oval":
+                    displayOval((Oval) shape);
+                    break;
+                case "text":
+                    displayText((TextItem) shape);
+                    break;
             }
         }
     }
 
     private void clearEventHandlers() {
-        // 清除所有事件处理
+        // Clear all event handlers
         canvas.setOnMouseDragged(null);
         canvas.setOnMouseReleased(null);
         canvas.setOnMouseClicked(null);
     }
 
     private void restoreCanvas() {
-        gc.drawImage(snapshot, 0, 0);  // 恢复到捕捉的初始状态
+        gc.drawImage(snapshot, 0, 0);
     }
 
     public void onFreeDraw(ActionEvent actionEvent) {
         clearEventHandlers();
         gc.setLineWidth(5);
-        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setStroke(selectedColor);
 
         canvas.setOnMouseDragged(event -> {
             double endX = event.getX();
             double endY = event.getY();
-            gc.strokeLine(startX, startY, endX, endY); // 绘制线条到 Canvas
+            // Draw a line on the canvas from the start position to the current mouse position
+            gc.strokeLine(startX, startY, endX, endY);
             try {
-                // 发送绘制数据到服务器
+                // Send the drawing data to the server for synchronization with other clients
                 server.freeDraw(new Line(selectedColor.toString(),startX, startY, endX, endY,5));
-                //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
                 System.err.println("Error sending line to server: " + e.getMessage());
                 e.printStackTrace();
             }
+
+            // Update the start position to the current mouse position for continuous drawing
             startX = endX;
             startY = endY;
         });
-
     }
     public void onEraser(ActionEvent actionEvent) {
+        // Create a new dialog to select the eraser size
         Dialog<Integer> dialog = new Dialog<>();
-        dialog.setTitle("选择橡皮大小");
+        dialog.setTitle("choose the eraser size");
 
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10));
 
-        Label label = new Label("请选择橡皮大小：");
+        Label label = new Label("choose the eraser size：");
         ComboBox<Integer> sizeComboBox = new ComboBox<>();
-        sizeComboBox.getItems().addAll(5, 10, 15, 20, 25); // 添加不同的橡皮大小
+        // Add eraser size options to the ComboBox
+        sizeComboBox.getItems().addAll(5, 10, 15, 20, 25);
 
         vbox.getChildren().addAll(label, sizeComboBox);
         dialog.getDialogPane().setContent(vbox);
 
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
+        // Set a result converter to handle the dialog result
         dialog.setResultConverter(button -> {
             if (button == ButtonType.OK) {
                 gc.setLineWidth(sizeComboBox.getValue());
@@ -173,14 +180,13 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         dialog.show();
 
         clearEventHandlers();
-        gc.setStroke(Color.WHITE); // 设置画笔颜色为背景颜色
+        gc.setStroke(Color.WHITE);
 
         canvas.setOnMouseDragged(event -> {
             double endX = event.getX();
             double endY = event.getY();
-            gc.strokeLine(startX, startY, endX, endY); // 绘制线条到 Canvas
+            gc.strokeLine(startX, startY, endX, endY);
             try {
-                // 发送绘制数据到服务器
                 server.freeDraw(new Line(Color.WHITE.toString(),startX, startY, endX, endY,sizeComboBox.getValue()));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
@@ -194,7 +200,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawRectangle(ActionEvent actionEvent) {
         clearEventHandlers();
-        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setStroke(selectedColor);
         gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
@@ -209,11 +215,9 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
         canvas.setOnMouseReleased(event -> {
             snapshot = canvas.snapshot(new SnapshotParameters(), null);  // 更新快照
-            // 可以在这里发送最终形状数据到服务器
             double endX = event.getX();
             double endY = event.getY();
             try {
-                // 发送绘制数据到服务器
                 server.drawRect(new Rectangle(selectedColor.toString(),startX, startY, endX, endY,5 ));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
@@ -225,7 +229,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawCircle(ActionEvent actionEvent) {
         clearEventHandlers();
-        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setStroke(selectedColor);
         gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
@@ -238,12 +242,10 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         });
 
         canvas.setOnMouseReleased(event -> {
-            // 可以在这里发送最终形状数据到服务器
-            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // 更新快照
+            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // update snapshot
             double endX = event.getX();
             double endY = event.getY();
             try {
-                // 发送绘制数据到服务器
                 server.drawCircle(new Circle(selectedColor.toString(),startX, startY, endX, endY,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
@@ -255,7 +257,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawOval(ActionEvent actionEvent) {
         clearEventHandlers();
-        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setStroke(selectedColor);
         gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
@@ -265,19 +267,17 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             double endY = event.getY();
             double radiusX = Math.abs(endX - startX) / 2;
             double radiusY = Math.abs(endY - startY) / 2;
-            double centerX = (startX + endX) / 2; // 改为计算 startX 和 endX 的平均值
-            double centerY = (startY + endY) / 2; // 改为计算 startY 和 endY 的平均值
+            double centerX = (startX + endX) / 2;
+            double centerY = (startY + endY) / 2;
 
             gc.strokeOval(centerX - radiusX, centerY - radiusY, 2 * radiusX, 2 * radiusY);
         });
 
         canvas.setOnMouseReleased(event -> {
-            // 可以在这里发送最终形状数据到服务器
-            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // 更新快照
+            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // update snapshot
             double endX = event.getX();
             double endY = event.getY();
             try {
-                // 发送绘制数据到服务器
                 server.drawOval(new Oval(selectedColor.toString(),startX, startY, endX, endY,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
@@ -290,7 +290,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onDrawTriangle(ActionEvent actionEvent) {
         clearEventHandlers();
-        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setStroke(selectedColor);
         gc.setLineWidth(5);
 
         canvas.setOnMouseDragged(event -> {
@@ -305,13 +305,12 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
         });
         canvas.setOnMouseReleased(event -> {
             // 可以在这里发送最终形状数据到服务器
-            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // 更新快照
+            snapshot = canvas.snapshot(new SnapshotParameters(), null);  // update snapshot
             double endX = event.getX();
             double endY = event.getY();
             double midX = (startX + endX) / 2;
 
             try {
-                // 发送绘制数据到服务器
                 server.drawTriangle(new Triangle(selectedColor.toString(),startX, startY, endX, endY,midX,5));
                 //server.drawLine(new Line(startX, startY, endX, endY, "black"));
             } catch (Exception e) {
@@ -322,7 +321,7 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
     }
 
     public void onDrawText(ActionEvent actionEvent) {
-        gc.setStroke(selectedColor); // 设置画笔颜色为背景颜色
+        gc.setStroke(selectedColor);
         gc.setLineWidth(1);
 
         canvas.setOnMouseClicked(event -> {
@@ -332,7 +331,6 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
             textInputDialog.showAndWait().ifPresent(text -> {
                 gc.fillText(text, event.getX(), event.getY());
                 try {
-                    // 发送绘制数据到服务器
                     server.drawText(new TextItem(text,startX, startY, "black",1));
                     //server.drawLine(new Line(startX, startY, endX, endY, "black"));
                 } catch (Exception e) {
@@ -428,13 +426,12 @@ public class WhiteBoardController implements  Serializable, WhiteboardUIUpdater 
 
     public void onColorSelected(ActionEvent actionEvent) {
         selectedColor = colorPicker.getValue();
-        gc.setStroke(selectedColor); // 设置画笔颜色
+        gc.setStroke(selectedColor);
     }
 
     @FXML
     private void onCloseWindow(WindowEvent event) {
         try {
-            // 关闭RMI连接
             if (server != null) {
             }
         } catch (Exception e) {

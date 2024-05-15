@@ -67,13 +67,14 @@ public class MainController {
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
-            // 显示错误弹出窗口
+
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
             alert.showAndWait();
 
-            // Optional: 关闭主窗口
-            Stage stage = (Stage) mainPane.getScene().getWindow();
-            stage.close();
+            if (mainPane.getScene()!=null){
+                Stage stage = (Stage) mainPane.getScene().getWindow();
+                stage.close();
+            }
         }
     }
     private void onLoginSuccess() throws IOException {
@@ -103,7 +104,7 @@ public class MainController {
         try {
             FXMLLoader loader = new FXMLLoader(WhiteBoardApplication.class.getResource("MenuBar.fxml"));
             MenuBar menuBar = loader.load();
-            mainPane.setTop(menuBar); // 将菜单栏设置到BorderPane的顶部
+            mainPane.setTop(menuBar);
         } catch (IOException e) {
             e.printStackTrace();
         }

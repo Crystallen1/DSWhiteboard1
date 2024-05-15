@@ -18,6 +18,4 @@ public class TextItem extends Shape implements Serializable {
     public void setText(String text) {
         this.text = text;
     }
-
-// 构造函数、getter和setter省略
 }

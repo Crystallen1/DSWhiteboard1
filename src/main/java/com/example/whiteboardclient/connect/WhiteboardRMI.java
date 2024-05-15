@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,7 +52,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized List<Shape> loadCanvas()  throws RemoteException {
+    public synchronized Queue<Shape> loadCanvas()  throws RemoteException {
         return storage.getShapes();
     }
 
@@ -119,7 +120,6 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     @Override
     public void drawRect(Rectangle rectangle) throws RemoteException {
         executorService.submit(() -> {
-
             System.out.println("Line drawn from (" + rectangle.getStartX() + ", " + rectangle.getStartY());
             try {
                 notifyListeners(rectangle);
@@ -144,7 +144,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized void drawTriangle(Triangle triangle) throws RemoteException {
+    public void drawTriangle(Triangle triangle) throws RemoteException {
         executorService.submit(() -> {
 
             System.out.println("triangle drawn from (" + triangle.getStartX() + ", " + triangle.getStartY());
@@ -157,7 +157,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized void drawOval(Oval oval) throws RemoteException {
+    public void drawOval(Oval oval) throws RemoteException {
         executorService.submit(() -> {
 
             System.out.println("oval drawn from (" + oval.getStartX() + ", " + oval.getStartY());
@@ -170,7 +170,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized void freeDraw(Line line) throws RemoteException {
+    public void freeDraw(Line line) throws RemoteException {
         executorService.submit(() -> {
 
             System.out.println(line.getColor()+"Line drawn from (" + line.getStartX() + ", " + line.getStartY() + ") to (" + line.getEndX() + ", " + line.getEndY() + ")");
@@ -183,7 +183,7 @@ public class WhiteboardRMI extends UnicastRemoteObject implements IWhiteboard, S
     }
 
     @Override
-    public synchronized void drawText(TextItem text) throws RemoteException {
+    public void drawText(TextItem text) throws RemoteException {
         executorService.submit(() -> {
 
             System.out.println(text.getText()+" add at" + text.getStartX() + ", " + text.getStartY() + "with" +text.getColor());

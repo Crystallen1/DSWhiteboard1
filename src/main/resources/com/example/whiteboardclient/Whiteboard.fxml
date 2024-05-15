@@ -14,13 +14,13 @@
     <VBox>
         <Canvas fx:id="canvas" width="500" height="300"/>
         <ToolBar>
-            <Button fx:id="freeDrawButton" text="自由画笔" onAction="#onFreeDraw"/>
-            <Button fx:id="rectangleButton" text="矩形" onAction="#onDrawRectangle"/>
-            <Button fx:id="circleButton" text="圆形" onAction="#onDrawCircle"/>
-            <Button fx:id="ovelButton" text="椭圆" onAction="#onDrawOval"/>
-            <Button fx:id="triangleButton" text="三角形" onAction="#onDrawTriangle"/>
-            <Button fx:id="textButton" text="文字" onAction="#onDrawText"/>
-            <Button fx:id="eraser" text="橡皮" onAction="#onEraser"/>
+            <Button fx:id="freeDrawButton" text="Free Draw" onAction="#onFreeDraw"/>
+            <Button fx:id="rectangleButton" text="Rectangle" onAction="#onDrawRectangle"/>
+            <Button fx:id="circleButton" text="Circle" onAction="#onDrawCircle"/>
+            <Button fx:id="ovelButton" text="Oval" onAction="#onDrawOval"/>
+            <Button fx:id="triangleButton" text="Triangle" onAction="#onDrawTriangle"/>
+            <Button fx:id="textButton" text="Text" onAction="#onDrawText"/>
+            <Button fx:id="eraser" text="Eraser" onAction="#onEraser"/>
             <ColorPicker fx:id="colorPicker" onAction="#onColorSelected"/>
         </ToolBar>
     </VBox>

@@ -17,6 +17,7 @@ import java.rmi.Naming;  // 导入Naming类
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +95,8 @@ public class WhiteBoardApplication extends Application implements Serializable {
         WhiteBoardApplication.serverPort = serverPort;
         WhiteBoardApplication.username = username;
         WhiteBoardApplication.admin = admin;
+        Locale.setDefault(new Locale("en", "US")); // 设置默认语言为英文
+
         launch();
     }
 }

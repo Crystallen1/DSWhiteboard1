@@ -26,25 +26,16 @@ public abstract class Shape implements Serializable {
         this.type = type;
         this.size=size;
     }
-
-    // 获取颜色
     public String getColor() {
         return color;
     }
 
-    // 设置颜色
     public void setColor(String color) {
         this.color = color;
     }
-
-    // 绘制形状的抽象方法
-
-    // 获取起始X坐标
     public double getStartX() {
         return startX;
     }
-
-    // 获取起始Y坐标
     public double getStartY() {
         return startY;
     }

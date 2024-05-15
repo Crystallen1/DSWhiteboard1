@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 public class UserListController implements Serializable,UserlistUIUpdater {
 
     public ListView<String> userList;
-    private IUserlist server; // RMI 服务接口
+    private IUserlist server; // RMI interface
 
 
     private void kickUser(String username) throws RemoteException {
@@ -50,24 +50,28 @@ public class UserListController implements Serializable,UserlistUIUpdater {
     }
 
     @Override
-    public Boolean showRequestDialog(String username) {
+    public void showRequestDialog(String username) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Allow user " + username + " to join?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.YES) {
                     try {
+                        // Check if a user with the same username already exists in the user list
                         for (int i = 0; i < userList.getItems().size(); i++) {
                             if (userList.getItems().get(i).equals(username)){
+                                // If a user with the same username exists, send a "same name" message to the server and exit
                                 server.sendMessage("same name");
                                 return;
                             }
                         }
+                        // If no user with the same username exists, create a new user and send an "approve" message to the server
                         server.createUser(new User(username));
                         server.sendMessage("approve");
                     } catch (RemoteException e) {
                         System.err.println("error: " + e.getMessage());
                         e.printStackTrace();                    }
                 } else {
+                    // If the response is NO, send a "disapprove" message to the server
                     try {
                         server.sendMessage("disapprove");
                     } catch (RemoteException e) {
@@ -75,15 +79,6 @@ public class UserListController implements Serializable,UserlistUIUpdater {
                         e.printStackTrace();                    }
                 }
             });
-        });
-        return true;
-    }
-
-    @Override
-    public void warnSameUsername(String username) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "same username");
-            alert.showAndWait();
         });
     }
 
@@ -101,24 +96,15 @@ public class UserListController implements Serializable,UserlistUIUpdater {
     public void initialize() throws RemoteException {
         try {
             String remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/UserServer";
-            // RMI 服务器查找
             server = (IUserlist) Naming.lookup(remoteObjectName);
             UserlistListener listener = new UserlistListener(this,WhiteBoardApplication.isAdmin(),WhiteBoardApplication.getUsername());
             server.addUserlistListener(listener);
-//            if (WhiteBoardApplication.isAdmin()){
-//                server.createAdmin(new User(WhiteBoardApplication.getUsername()));
-//            }else {
-//                //server.createAdmin(new User(WhiteBoardApplication.getUsername()));
-//                server.joinUser(WhiteBoardApplication.getUsername());
-//            }
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
-            // 显示错误弹出窗口
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
             alert.showAndWait();
 
-            // Optional: 关闭主窗口
             System.exit(1);
         }
 
@@ -128,9 +114,9 @@ public class UserListController implements Serializable,UserlistUIUpdater {
             private final Button button = new Button("Kick");
 
             {
-                hBox.setSpacing(100); // 设置间距
+                hBox.setSpacing(100);
                 if (WhiteBoardApplication.isAdmin()){
-                    hBox.getChildren().addAll(text, button); // 添加文本和按钮到水平布局
+                    hBox.getChildren().addAll(text, button);
                 }else {
                     hBox.getChildren().addAll(text);
                 }
@@ -147,10 +133,10 @@ public class UserListController implements Serializable,UserlistUIUpdater {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
-                    setGraphic(null); // 如果项是空的，不显示任何内容
+                    setGraphic(null);
                 } else {
-                    text.setText(item); // 设置文本为项的内容
-                    setGraphic(hBox); // 设置图形为HBox
+                    text.setText(item);
+                    setGraphic(hBox);
                 }
             }
         });

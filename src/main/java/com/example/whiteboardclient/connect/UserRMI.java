@@ -73,12 +73,10 @@ public class UserRMI extends UnicastRemoteObject implements IUserlist, Serializa
     @Override
     public void addUserlistListener(IUserlistListener listener) throws RemoteException {
         listeners.add(listener);
-
     }
 
     @Override
     public synchronized void createAdmin(User user) throws RemoteException {
-
             System.out.println("add new admin:"+user.getUsername());
             userManager.addUser(user);
             userManager.setAdminUser(user);

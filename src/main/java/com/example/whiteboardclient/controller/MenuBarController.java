@@ -32,21 +32,17 @@ public class MenuBarController implements Serializable {
     public void initialize() {
         try {
             String remoteObjectName = "//"+ WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/UserServer";
-            // RMI 服务器查找
             userlistServer = (IUserlist) Naming.lookup(remoteObjectName);
             remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/WhiteboardServer";
-            // RMI 服务器查找
             whiteboardServer = (IWhiteboard) Naming.lookup(remoteObjectName);
             remoteObjectName = "//"+WhiteBoardApplication.getServerIPAddress()+":"+WhiteBoardApplication.getServerPort()+"/ChatServer";
-            // RMI 服务器查找
             chatService = (IChatService) Naming.lookup(remoteObjectName);
         } catch (Exception e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
-            // 显示错误弹出窗口
+
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to connect to RMI server: " + e.getMessage());
             alert.showAndWait();
-            // Optional: 关闭主窗口
             System.exit(1);
         }
     }
@@ -75,21 +71,20 @@ public class MenuBarController implements Serializable {
     }
 
     public void handleOpen(ActionEvent actionEvent) throws RemoteException {
+        // Create a FileChooser instance
         FileChooser fileChooser = new FileChooser();
-        // 设置窗口的标题
-        fileChooser.setTitle("选择.dat文件");
+        fileChooser.setTitle("choose .dat file");
 
-        // 设置文件过滤器，只允许.dat格式的文件
+        // Set a file extension filter to only allow .dat files
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("DAT files (*.dat)", "*.dat");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        // 打开文件选择窗口，并获取用户选择的文件
+        // Open the file chooser dialog and get the user's selected file
         File selectedFile = fileChooser.showOpenDialog(null);
 
         if (selectedFile != null) {
-            // 打印出选择的文件路径，或者进行其他操作
             System.out.println("Selected File: " + selectedFile.getAbsolutePath());
-            // 这里可以添加代码来处理选择的文件，例如读取文件内容等
+            // Call the openFile method on the whiteboard server with the selected file's path
             whiteboardServer.openFile(selectedFile.getAbsolutePath());
             //whiteboardServer.loadCanvas();
         }
@@ -103,7 +98,6 @@ public class MenuBarController implements Serializable {
         } catch (RemoteException e) {
             System.err.println("RMI server connection error: " + e.getMessage());
             e.printStackTrace();
-            // 显示错误弹出窗口
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed: " + e.getMessage());
             alert.showAndWait();
         }
@@ -111,31 +105,33 @@ public class MenuBarController implements Serializable {
     }
 
     public void handleSaveAs(ActionEvent actionEvent) throws RemoteException {
-        // 创建并配置DirectoryChooser
+        // Create and configure the DirectoryChooser
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Choose a Directory");
 
-        // 打开选择目录的窗口
+        // Open the directory chooser dialog window
         File selectedDirectory = directoryChooser.showDialog(null);
 
         if (selectedDirectory != null) {
-            // 创建一个TextInputDialog，提示用户输入文件名
+            // Create a TextInputDialog to prompt the user to enter a file name
             TextInputDialog textInputDialog = new TextInputDialog("defaultFileName");
             textInputDialog.setTitle("File Name Input");
             textInputDialog.setHeaderText("Enter the file name:");
             textInputDialog.setContentText("Name:");
 
-            // 显示对话框并等待用户响应
+            // Show the dialog and wait for the user's response
             Optional<String> result = textInputDialog.showAndWait();
 
-            // 检查用户是否输入了文件名
+            // Check if the user entered a file name
             if (result.isPresent()) {
                 String fileName = result.get();
-                // 构建完整的文件路径
+                // Construct the full file path
                 File file = new File(selectedDirectory.getAbsolutePath() + File.separator + fileName + ".dat");
-
-                // 调用whiteboardServer的saveAsCanvas方法，传入文件路径
+                // Call the saveAsCanvas method of whiteboardServer, passing the file path
                 whiteboardServer.saveAsCanvas(file.getAbsolutePath());
+            }else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Please enter the file name");
+                alert.showAndWait();
             }
         }
     }
@@ -144,6 +140,7 @@ public class MenuBarController implements Serializable {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save current canvas", ButtonType.YES, ButtonType.NO);
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
+                // If the user chooses 'YES', save the current canvas
                 try {
                     whiteboardServer.saveCanvas();
                 } catch (RemoteException e) {
@@ -155,6 +152,7 @@ public class MenuBarController implements Serializable {
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
+                // Iterate through the list of users and kick each user with a notification message
                 for (int i = 0; i < userManager.getUsers().size(); i++) {
                     String username =userManager.getUsers().get(i).getUsername();
                     try {
@@ -166,6 +164,7 @@ public class MenuBarController implements Serializable {
                 }
                 System.exit(0);
             } else {
+                // If the user chooses 'NO', only kick all users without saving the canvas
                 UserManager userManager= null;
                 try {
                     userManager = userlistServer.getUserManager();
